@@ -51,3 +51,11 @@ export async function postFood(user_id, food) {
 	);
 	return foodItem.rows;
 }
+
+// gets the user's profile information
+export async function getUserProfile(user_id) {
+	const userInfo = await query(`SELECT * FROM users WHERE users.id = $1`, [
+		user_id,
+	]);
+	return userInfo.rows;
+}
