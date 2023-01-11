@@ -1,6 +1,6 @@
 import query from '../db/index.js';
 
-export async function getUserFood(user_id) {
+export async function getUserFood(id) {
   const allUserFood = await query(
     `SELECT food.name from food
       INNER JOIN storage_containers
@@ -11,8 +11,8 @@ export async function getUserFood(user_id) {
       ON house_members.house_id = house.id
       INNER JOIN users
       ON users.id = house_members.user_id
-      WHERE users.id = $1`,
-    [user_id]
+      WHERE users.id = $1;`,
+    [id]
   );
   return allUserFood.rows;
 }
