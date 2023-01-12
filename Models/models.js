@@ -1,5 +1,5 @@
 import query from "../db/index.js";
-
+//gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
 	const allUserFood = await query(
 		`SELECT food.name from food
@@ -10,8 +10,11 @@ export async function getUserFood(user_id) {
       INNER JOIN house_members
       ON house_members.house_id = house.id
       INNER JOIN users
-      ON users.id = house_members.user_id
-      WHERE users.id = $1`,
+      ON users.uid = house_members.user_id
+      WHERE users.uid = $1
+	  AND food.eaten_on IS NULL
+      AND food.binned_on IS NULL
+      AND food.donated_on IS NULL`,
 		[user_id]
 	);
 	return allUserFood.rows;
@@ -59,3 +62,20 @@ export async function getUserProfile(user_id) {
 	]);
 	return userInfo.rows;
 }
+
+//updates date eaten/binned/donated
+export async function patchFoodDate(dateEaten, dateBinned, dateDonated, food_id) {
+	const date_eaten = await query(`UPDATE food SET eaten_on = $1, binned_on = $2, donated_on = $3 WHERE id = $4 RETURNING *`, [dateEaten, dateBinned, dateDonated, food_id])
+	return date_eaten.rows
+}
+
+//updates date thrown away
+// export async function patchFoodBinnedDate(date) {
+// 	const date_binned = await query(`UPDATE food SET binned_on = $1 WHERE id = 1 RETURNING *`, [date])
+// 	return date_binned.rows
+// }
+// //updates date donated
+// export async function patchFoodDonatedDate(date) {
+// 	const date_donated = await query(`UPDATE food SET donated_on = $1 WHERE id = 1 RETURNING *`, [date])
+// 	return date_donated.rows
+// }
