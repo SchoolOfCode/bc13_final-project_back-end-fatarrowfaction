@@ -2,11 +2,11 @@ import express from "express";
 import cors from "cors";
 
 import {
-	userFoodRouter,
-	newItemRouter,
-	userProfileRouter,
+  userFoodRouter,
+  newItemRouter,
+  userProfileRouter,
 } from "./Routes/routes.js";
-
+import { userRouter } from "./Routes/user.js";
 
 const app = express();
 const PORT = process.env.port || 3000;
