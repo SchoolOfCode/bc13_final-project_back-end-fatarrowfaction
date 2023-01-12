@@ -4,6 +4,7 @@ import {
 	getStorageID,
 	postFood,
 	getUserProfile,
+	postUsersID,
 } from "../Models/models.js";
 //gets from Pantry screen
 export const userFoodRouter = express.Router();
@@ -31,4 +32,9 @@ newItemRouter.post("/:id", async function (req, res) {
 userProfileRouter.get("/:id", async function (req, res) {
 	const userInfo = await getUserProfile(req.params.id);
 	res.json({ success: true, payload: userInfo });
+});
+
+userProfileRouter.post("/", async function (req, res) {
+	const userID = await postUsersID(req.body.uid);
+	res.json({ success: true, payload: userID });
 });
