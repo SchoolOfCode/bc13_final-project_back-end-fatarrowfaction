@@ -62,7 +62,6 @@ export async function getUserProfile(user_id) {
 
 // make a post with the user's ID from auth and post it into our database
 export async function postUsersID(user_id) {
-  console.log("postusersid fired");
   const userID = await query(
     `INSERT INTO users(uid) VALUES($1) RETURNING * ;`,
     [user_id]
