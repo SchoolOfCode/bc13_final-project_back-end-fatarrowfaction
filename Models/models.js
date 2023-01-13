@@ -68,3 +68,28 @@ export async function postUsersID(user_id) {
   );
   return userID.rows;
 }
+
+//updates date eaten/binned/donated
+export async function patchEatenDate(id) {
+  const date_eaten = await query(
+    `UPDATE food SET eaten_on = current_timestamp WHERE id = $1 RETURNING *`,
+    [id]
+  );
+  return date_eaten.rows;
+}
+// updates date thrown away
+export async function patchBinnedDate(id) {
+  const date_binned = await query(
+    `UPDATE food SET binned_on = current_timestamp WHERE id = $1 RETURNING *`,
+    [id]
+  );
+  return date_binned.rows;
+}
+//updates date donated
+export async function patchFoodDonatedDate(id) {
+  const date_donated = await query(
+    `UPDATE food SET donated_on = current_timestamp WHERE id = $1 RETURNING *`,
+    [id]
+  );
+  return date_donated.rows;
+}

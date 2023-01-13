@@ -46,16 +46,16 @@ userProfileRouter.post("/", async function (req, res) {
 });
 
 binFoodRouter.patch("/:id", async function (req, res) {
-  const foodArray = await binFood(req.params.id);
-  res.json({ success: true, payload: foodArray });
+  const foodItem = await patchBinnedDate(req.params.id);
+  res.json({ success: true, payload: foodItem });
 });
 
 eatFoodRouter.patch("/:id", async function (req, res) {
-  const foodArray = await eatFood(req.params.id);
-  res.json({ success: true, payload: foodArray });
+  const foodItem = await patchEatenDate(req.params.id);
+  res.json({ success: true, payload: foodItem });
 });
 
 donateFoodRouter.patch("/:id", async function (req, res) {
-  const foodArray = await donateFood(req.params.id);
-  res.json({ success: true, payload: foodArray });
+  const foodItem = await patchFoodDonatedDate(req.params.id);
+  res.json({ success: true, payload: foodItem });
 });
