@@ -5,6 +5,9 @@ import {
   userFoodRouter,
   newItemRouter,
   userProfileRouter,
+  binFoodRouter,
+  eatFoodRouter,
+  donateFoodRouter,
 } from "./Routes/routes.js";
 import { userRouter } from "./Routes/user.js";
 
@@ -18,6 +21,9 @@ app.use("/pantry", userFoodRouter);
 app.use("/userVerify", userRouter);
 app.use("/addItem", newItemRouter);
 app.use("/userProfile", userProfileRouter);
+app.use("/binFood", binFoodRouter);
+app.use("/eatFood", eatFoodRouter);
+app.use("/donateFood", donateFoodRouter);
 
 app.listen(PORT, function () {
   console.log(`Server is running on port ${PORT}`);
