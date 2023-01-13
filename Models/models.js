@@ -1,5 +1,5 @@
 import query from "../db/index.js";
-
+//gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
   const allUserFood = await query(
     `SELECT food.name from food
@@ -11,10 +11,13 @@ export async function getUserFood(user_id) {
       ON house_members.house_id = house.id
       INNER JOIN users
       ON users.uid = house_members.user_id
-      WHERE users.uid = $1`,
-    [user_id]
-  );
-  return allUserFood.rows;
+      WHERE users.uid = $1
+	  AND food.eaten_on IS NULL
+      AND food.binned_on IS NULL
+      AND food.donated_on IS NULL`,
+		[user_id]
+	);
+	return allUserFood.rows;
 }
 
 // whenever a user posts a new item, we need to first send a get request to get the container ID and then a post request to put the new food item in there
@@ -93,3 +96,7 @@ export async function patchFoodDonatedDate(id) {
   );
   return date_donated.rows;
 }
+
+
+
+
