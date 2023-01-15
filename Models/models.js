@@ -7,10 +7,10 @@ export async function getUserFood(user_id) {
       ON storage_containers.id = food.storage_id
       INNER JOIN house
       ON house.id = storage_containers.house_id
-      INNER JOIN house_members
-      ON house_members.house_id = house.id
+      INNER JOIN house_owners
+      ON house_owners.house_id = house.id
       INNER JOIN users
-      ON users.uid = house_members.user_id
+      ON users.uid = house_owners.user_id
       WHERE users.uid = $1
 	  AND food.eaten_on IS NULL
       AND food.binned_on IS NULL
@@ -28,10 +28,10 @@ export async function getAllUserFood(user_id) {
 		ON storage_containers.id = food.storage_id
 		INNER JOIN house
 		ON house.id = storage_containers.house_id
-		INNER JOIN house_members
-		ON house_members.house_id = house.id
+		INNER JOIN house_owners
+		ON house_owners.house_id = house.id
 		INNER JOIN users
-		ON users.uid = house_members.user_id
+		ON users.uid = house_owners.user_id
 		WHERE users.uid = $1`,
     [user_id]
   );
@@ -47,10 +47,10 @@ export async function getLastWeeksWastedFood(user_id) {
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
 	ON house.id = storage_containers.house_id
-	INNER JOIN house_members
-	ON house_members.house_id = house.id
+	INNER JOIN house_owners
+	ON house_owners.house_id = house.id
 	INNER JOIN users
-	ON users.uid = house_members.user_id
+	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
 	AND food.binned_on >= current_date - interval '1 week'
 	AND food.binned_on <= current_date
@@ -68,10 +68,10 @@ export async function getLastWeeksEatenFood(user_id) {
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
 	ON house.id = storage_containers.house_id
-	INNER JOIN house_members
-	ON house_members.house_id = house.id
+	INNER JOIN house_owners
+	ON house_owners.house_id = house.id
 	INNER JOIN users
-	ON users.uid = house_members.user_id
+	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
 	AND food.eaten_on >= current_date - interval '1 week'
 	AND food.eaten_on <= current_date
@@ -89,10 +89,10 @@ export async function getAllUserWastedFood(user_id) {
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
 	ON house.id = storage_containers.house_id
-	INNER JOIN house_members
-	ON house_members.house_id = house.id
+	INNER JOIN house_owners
+	ON house_owners.house_id = house.id
 	INNER JOIN users
-	ON users.uid = house_members.user_id
+	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
 	AND food.binned_on <= current_date
 ;`,
@@ -109,10 +109,10 @@ export async function getAllUserEatenFood(user_id) {
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
 	ON house.id = storage_containers.house_id
-	INNER JOIN house_members
-	ON house_members.house_id = house.id
+	INNER JOIN house_owners
+	ON house_owners.house_id = house.id
 	INNER JOIN users
-	ON users.uid = house_members.user_id
+	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
 	AND food.eaten_on <= current_date
 ;`,
@@ -128,10 +128,10 @@ export async function getStorageID(user_id) {
       FROM storage_containers
       INNER JOIN house
       ON house.id = storage_containers.house_id
-      INNER JOIN house_members
-      ON house_members.house_id = house.id
+      INNER JOIN house_owners
+      ON house_owners.house_id = house.id
       INNER JOIN users
-      ON users.id = house_members.user_id
+      ON users.id = house_owners.user_id
       WHERE users.id = $1;`,
     [user_id]
   );
@@ -187,4 +187,41 @@ export async function patchFoodDonatedDate(id) {
     [id]
   );
   return date_donated.rows;
+}
+
+// posts a new user and along with it opens a house_owner, house and storage_container for that user
+//this the returning value of each tier must be checked to see if the correct information is being inserted in the next tier
+export async function postNewUser(id) {
+  const newUser = await query(
+    `INSERT INTO users (
+      uid
+       )
+     VALUES (
+         $1
+       )
+       RETURNING users.uid;`,
+    [id]
+  );
+  const newHouse = await query(
+    `INSERT INTO house (name)
+    VALUES ('My house)
+    RETURNING house.id`
+  );
+  const newHouseOwner = await query(
+    `INSERT INTO house_owners
+    (user_id, house_id)
+    VALUES ($1, $2)`,
+    [id, newHouse]
+  );
+  const newStorageContainer = await query(
+    `INSERT INTO storage_containers
+    (house_id, name)
+    VALUES (newHouse, 'Fridge')`
+  );
+  return [
+    newUser.rows,
+    newHouse.rows,
+    newHouseOwner.rows,
+    newStorageContainer.rows,
+  ];
 }
