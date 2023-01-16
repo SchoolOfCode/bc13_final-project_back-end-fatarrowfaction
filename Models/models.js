@@ -2,7 +2,7 @@ import query from "../db/index.js";
 //gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
   const allUserFood = await query(
-    `SELECT * from food
+    `SELECT food.id, food.name, food.price, food.storage_id, food.expires_on, food.eaten_on, food.binned_on, food.donated_on, food.added_on from food
       INNER JOIN storage_containers
       ON storage_containers.id = food.storage_id
       INNER JOIN house
@@ -130,14 +130,15 @@ export async function getStorageID(user_id) {
       INNER JOIN house_owners
       ON house_owners.house_id = house.id
       INNER JOIN users
-      ON users.id = house_owners.user_id
-      WHERE users.id = $1;`,
+      ON users.uid = house_owners.user_id
+      WHERE users.uid = $1;`,
     [user_id]
   );
   return storageID.rows;
 }
 //calls above function first to get correct container, then posts food item in it. this is currently only set up for users with only 1 container
 export async function postFood(user_id, food) {
+  console.log(food);
   const storageID = await getStorageID(user_id);
   const foodItem = await query(
     `INSERT INTO food (
@@ -152,6 +153,7 @@ export async function postFood(user_id, food) {
       VALUES ($1, $2, $3, $4, NULL, NULL, NULL);`,
     [food.name, food.price, storageID[0].id, food.expires_on]
   );
+
   return foodItem.rows;
 }
 
