@@ -39,7 +39,6 @@ export async function getAllUserFood(user_id) {
 }
 
 //gets wasted food for last week for a user
-
 export async function getLastWeeksWastedFood(user_id) {
   const weekFood = await query(
     `SELECT * from food
@@ -137,7 +136,7 @@ export async function getStorageID(user_id) {
   );
   return storageID.rows;
 }
-
+//calls above function first to get correct container, then posts food item in it. this is currently only set up for users with only 1 container 
 export async function postFood(user_id, food) {
   const storageID = await getStorageID(user_id);
   const foodItem = await query(
@@ -195,28 +194,30 @@ export async function postNewUser(id) {
   const newUser = await query(
     `INSERT INTO users (
       uid
-       )
-     VALUES (
-         $1
-       )
-       RETURNING users.uid;`,
-    [id]
-  );
+      )
+      VALUES (
+        $1
+        )
+        RETURNING users.uid;`,
+        [id]
+        );
   const newHouse = await query(
     `INSERT INTO house (name)
-    VALUES ('My house)
+    VALUES ('My house')
     RETURNING house.id`
   );
+
   const newHouseOwner = await query(
     `INSERT INTO house_owners
     (user_id, house_id)
     VALUES ($1, $2)`,
-    [id, newHouse]
+    [id, newHouse.rows[0].id]
   );
+
   const newStorageContainer = await query(
     `INSERT INTO storage_containers
     (house_id, name)
-    VALUES (newHouse, 'Fridge')`
+    VALUES ($1, 'Fridge')`, [newHouse.rows[0].id]
   );
   return [
     newUser.rows,
@@ -224,4 +225,6 @@ export async function postNewUser(id) {
     newHouseOwner.rows,
     newStorageContainer.rows,
   ];
+
 }
+
