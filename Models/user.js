@@ -1,5 +1,5 @@
 import query from "../db/index.js";
-import { postUsersID } from "./models.js";
+import { postNewUser } from "./models.js";
 
 // the following function takes in a user's uid, and then queries the DB to see if
 // that user exists. If the user does exist, it returns it. If the user does not
@@ -12,7 +12,7 @@ export async function getUser(user) {
       [user]
     );
     if (backendUserReply.rows.length === 0) {
-      const newUser = await postUsersID(user);
+      const newUser = await postNewUser(user);
       return newUser.rows;
     }
     if (backendUserReply.rows.length > 0) {

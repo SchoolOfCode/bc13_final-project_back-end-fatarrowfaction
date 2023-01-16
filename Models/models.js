@@ -1,4 +1,4 @@
-import query from '../db/index.js';
+import query from "../db/index.js";
 //gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
   const allUserFood = await query(
@@ -136,7 +136,7 @@ export async function getStorageID(user_id) {
   );
   return storageID.rows;
 }
-//calls above function first to get correct container, then posts food item in it. this is currently only set up for users with only 1 container 
+//calls above function first to get correct container, then posts food item in it. this is currently only set up for users with only 1 container
 export async function postFood(user_id, food) {
   const storageID = await getStorageID(user_id);
   const foodItem = await query(
@@ -208,8 +208,8 @@ export async function postNewUser(id) {
         $1
         )
         RETURNING users.uid;`,
-        [id]
-        );
+    [id]
+  );
   const newHouse = await query(
     `INSERT INTO house (name)
     VALUES ('My house')
@@ -226,7 +226,8 @@ export async function postNewUser(id) {
   const newStorageContainer = await query(
     `INSERT INTO storage_containers
     (house_id, name)
-    VALUES ($1, 'Fridge')`, [newHouse.rows[0].id]
+    VALUES ($1, 'Fridge')`,
+    [newHouse.rows[0].id]
   );
   return [
     newUser.rows,
@@ -234,3 +235,4 @@ export async function postNewUser(id) {
     newHouseOwner.rows,
     newStorageContainer.rows,
   ];
+}
