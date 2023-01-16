@@ -157,10 +157,19 @@ export async function postFood(user_id, food) {
 
 // gets the user's profile information
 export async function getUserProfile(user_id) {
-  const userInfo = await query(`SELECT * FROM users WHERE users.id = $1`, [
+  const userInfo = await query(`SELECT * FROM users WHERE users.uid = $1`, [
     user_id,
   ]);
   return userInfo.rows;
+}
+
+// make a post with the user's ID from auth and post it into our database
+export async function postUsersID(user_id) {
+  const userID = await query(
+    `INSERT INTO users(uid) VALUES($1) RETURNING * ;`,
+    [user_id]
+  );
+  return userID.rows;
 }
 
 //updates date eaten/binned/donated
@@ -225,6 +234,3 @@ export async function postNewUser(id) {
     newHouseOwner.rows,
     newStorageContainer.rows,
   ];
-
-}
-
