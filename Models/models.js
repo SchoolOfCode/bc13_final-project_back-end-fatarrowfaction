@@ -1,6 +1,7 @@
 import query from "../db/index.js";
 //gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
+  console.log('getUserFood has been called')
   const allUserFood = await query(
     `SELECT food.id, food.name, food.price, food.storage_id, food.expires_on, food.eaten_on, food.binned_on, food.donated_on, food.added_on from food
       INNER JOIN storage_containers
