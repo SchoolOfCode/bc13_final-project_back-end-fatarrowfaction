@@ -55,8 +55,8 @@ export async function getAllEatenAndWasted(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.binned_on <= current_date
-  OR food.eaten_on <= current_date
+	AND food.binned_on <= current_date + 1
+  OR food.eaten_on <= current_date + 1
   AND users.uid = $1
 ;`,
     [user_id]
@@ -79,8 +79,8 @@ export async function getLastWeeksWastedFood(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.binned_on >= current_date - interval '1 week'
-	AND food.binned_on <= current_date
+	AND food.binned_on >= current_date + 1 - interval '1 week'
+	AND food.binned_on <= current_date + 1
 ;`,
     [user_id]
   );
@@ -100,8 +100,8 @@ export async function getLastWeeksEatenFood(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.eaten_on >= current_date - interval '1 week'
-	AND food.eaten_on <= current_date
+	AND food.eaten_on >= current_date + 1 - interval '1 week'
+	AND food.eaten_on <= current_date + 1
 ;`,
     [user_id]
   );
@@ -121,7 +121,7 @@ export async function getAllUserWastedFood(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.binned_on <= current_date
+	AND food.binned_on <= current_date + 1
 ;`,
     [user_id]
   );
@@ -141,7 +141,7 @@ export async function getAllUserEatenFood(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.eaten_on <= current_date
+	AND food.eaten_on <= current_date + 1
 ;`,
     [user_id]
   );
