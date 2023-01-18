@@ -6,7 +6,7 @@ export function eatenStats(dataArray) {
   const wastedPercentage =
     (numberOfWasted / (numberOfEaten + numberOfWasted)) * 100;
   return {
-    allTimeEatenPercentage: Math.round(eatenPercentage),
-    allTimeWastedPercentage: Math.round(wastedPercentage),
+    eatenPercentage: Math.round(eatenPercentage),
+    wastedPercentage: Math.round(wastedPercentage),
   };
 }
