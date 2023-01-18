@@ -1,4 +1,5 @@
 import query from "../db/index.js";
+import { eatenStats } from "../HelperFunctions/calculatePercentages.js";
 //gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
   console.log("getUserFood has been called");
@@ -60,7 +61,9 @@ export async function getAllEatenAndWasted(user_id) {
 ;`,
     [user_id]
   );
-  return eatenAndWastedFood.rows;
+    const stats = eatenStats(eatenAndWastedFood.rows)
+
+  return stats;
 }
 
 //gets wasted food for last week for a user
