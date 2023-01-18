@@ -1,7 +1,7 @@
 import query from "../db/index.js";
 //gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
-  console.log('getUserFood has been called')
+  console.log("getUserFood has been called");
   const allUserFood = await query(
     `SELECT food.id, food.name, food.price, food.storage_id, food.expires_on, food.eaten_on, food.binned_on, food.donated_on, food.added_on from food
       INNER JOIN storage_containers
@@ -40,8 +40,7 @@ export async function getAllUserFood(user_id) {
   return allUserFood.rows;
 }
 
-
-//gets all eaten and wasted food for a userSelect: 
+//gets all eaten and wasted food for a userSelect:
 
 export async function getAllEatenAndWasted(user_id) {
   const eatenAndWastedFood = await query(
@@ -64,12 +63,10 @@ export async function getAllEatenAndWasted(user_id) {
   return eatenAndWastedFood.rows;
 }
 
-
-
 //gets wasted food for last week for a user
 export async function getLastWeeksWastedFood(user_id) {
   const weekFood = await query(
-    `SELECT * from food
+    `SELECT food.name, food.price, food.binned_on from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
@@ -90,7 +87,7 @@ export async function getLastWeeksWastedFood(user_id) {
 //gets eaten food for last week for a user
 export async function getLastWeeksEatenFood(user_id) {
   const weekFood = await query(
-    `SELECT * from food
+    `SELECT food.name, food.price, food.eaten_on from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
@@ -111,7 +108,7 @@ export async function getLastWeeksEatenFood(user_id) {
 //gets all of a users wasted food
 export async function getAllUserWastedFood(user_id) {
   const wastedFood = await query(
-    `SELECT * from food
+    `SELECT food.name, food.price, food.binned_on from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
@@ -131,7 +128,7 @@ export async function getAllUserWastedFood(user_id) {
 //gets all of a users eaten food
 export async function getAllUserEatenFood(user_id) {
   const eatenFood = await query(
-    `SELECT * from food
+    `SELECT food.name, food.price, food.eaten_on from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
