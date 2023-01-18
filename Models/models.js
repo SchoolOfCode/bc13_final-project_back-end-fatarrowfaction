@@ -15,7 +15,8 @@ export async function getUserFood(user_id) {
       WHERE users.uid = $1
 	  AND food.eaten_on IS NULL
       AND food.binned_on IS NULL
-      AND food.donated_on IS NULL`,
+      AND food.donated_on IS NULL
+      ORDER BY food.expires_on`,
     [user_id]
   );
   return allUserFood.rows;
@@ -38,6 +39,32 @@ export async function getAllUserFood(user_id) {
   );
   return allUserFood.rows;
 }
+
+
+//gets all eaten and wasted food for a userSelect: 
+
+export async function getAllEatenAndWasted(user_id) {
+  const eatenAndWastedFood = await query(
+    `SELECT * from food
+	INNER JOIN storage_containers
+	ON storage_containers.id = food.storage_id
+	INNER JOIN house
+	ON house.id = storage_containers.house_id
+	INNER JOIN house_owners
+	ON house_owners.house_id = house.id
+	INNER JOIN users
+	ON users.uid = house_owners.user_id
+	WHERE users.uid = $1
+	AND food.binned_on <= current_date
+  OR food.eaten_on <= current_date
+  AND users.uid = $1
+;`,
+    [user_id]
+  );
+  return eatenAndWastedFood.rows;
+}
+
+
 
 //gets wasted food for last week for a user
 export async function getLastWeeksWastedFood(user_id) {

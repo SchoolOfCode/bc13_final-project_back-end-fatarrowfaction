@@ -8,6 +8,11 @@ import {
   binFoodRouter,
   eatFoodRouter,
   donateFoodRouter,
+  allWastedFoodRouter,
+  allEatenFoodRouter,
+  eatenAndWastedRouter,
+  lastWeeksEatenFoodRouter,
+  lastWeeksWastedFoodRouter
 } from "./Routes/routes.js";
 import { userRouter } from "./Routes/user.js";
 
@@ -17,6 +22,10 @@ const PORT = process.env.port || 3000;
 app.use(cors());
 app.use(express.json());
 
+app.use('/lastWeekWasted', lastWeeksWastedFoodRouter)
+app.use("/lastWeekEaten", lastWeeksEatenFoodRouter)
+app.use("/allEatenFood", allEatenFoodRouter);
+app.use("/allWastedFood", allWastedFoodRouter);
 app.use("/pantry", userFoodRouter);
 app.use("/userVerify", userRouter);
 app.use("/addItem", newItemRouter);
