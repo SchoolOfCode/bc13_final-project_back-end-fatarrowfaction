@@ -43,7 +43,7 @@ export async function getAllUserFood(user_id) {
 
 //gets all eaten and wasted food for a userSelect:
 
-export async function getWeekEatenAndWasted(user_id) {
+export async function getAllEatenAndWasted(user_id) {
   const eatenAndWastedFood = await query(
     `SELECT * from food
 	INNER JOIN storage_containers
@@ -68,7 +68,7 @@ export async function getWeekEatenAndWasted(user_id) {
 
 
 //gets LAST WEEKS eaten and wasted
-export async function getLastWeeksWastedFood(user_id) {
+export async function getWeekEatenAndWasted(user_id) {
   const weekFood = await query(
     `SELECT food.name, food.price, food.binned_on from food
 	INNER JOIN storage_containers
