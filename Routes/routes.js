@@ -43,7 +43,7 @@ export const weeksEatenWastedRouter = express.Router();
 
 weeksEatenWastedRouter.get('/:id',async function (req, res){
   const allEatenFood = await getWeekEatenAndWasted(req.params.id);
-  res.json({ success: true, payload: allEatenFood });} ))
+  res.json({ success: true, payload: allEatenFood });} )
 
 lastWeeksWastedFoodRouter.get("/:id",async function (req, res){
   const allEatenFood = await getLastWeeksWastedFood(req.params.id);
