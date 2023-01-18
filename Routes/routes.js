@@ -10,7 +10,8 @@ import {
   getAllUserEatenFood,
   getLastWeeksWastedFood,
   getAllEatenAndWasted,
-  getLastWeeksEatenFood
+  getLastWeeksEatenFood,
+  getWeekEatenAndWasted
 } from "../Models/models.js";
 //gets from Pantry screen
 export const userFoodRouter = express.Router();
@@ -37,15 +38,23 @@ export const eatenAndWastedRouter = express.Router();
 //get last weeks wasted food
 export const lastWeeksWastedFoodRouter = express.Router();
 
+//gets weeks eaten and wasted
+export const weeksEatenWastedRouter = express.Router();
+
+weeksEatenWastedRouter.get('/:id',async function (req, res){
+  const allEatenFood = await getWeekEatenAndWasted(req.params.id);
+  res.json({ success: true, payload: allEatenFood });} ))
+
 lastWeeksWastedFoodRouter.get("/:id",async function (req, res){
-  const allEatenFood = await getLastWeeksWastedFood(req.params.id);} )
+  const allEatenFood = await getLastWeeksWastedFood(req.params.id);
+  res.json({ success: true, payload: allEatenFood });} )
 
 lastWeeksEatenFoodRouter.get("/:id",async function (req, res){
-  const allEatenFood = await getLastWeeksEatenFood(req.params.id);} )
+  const allEatenFood = await getLastWeeksEatenFood(req.params.id);
+  res.json({ success: true, payload: allEatenFood });} )
 
 allEatenFoodRouter.get("/:id", async function (req, res){
   const allEatenFood = await getAllUserEatenFood(req.params.id);
-
   res.json({ success: true, payload: allEatenFood });
 })
 
