@@ -70,7 +70,7 @@ export async function getAllEatenAndWasted(user_id) {
 //gets LAST WEEKS eaten and wasted
 export async function getWeekEatenAndWasted(user_id) {
   const weekFood = await query(
-    `SELECT food.name, food.price, food.binned_on from food
+    `SELECT food.name, food.price, food.binned_on, food.eaten_on from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
@@ -82,7 +82,8 @@ export async function getWeekEatenAndWasted(user_id) {
 	WHERE users.uid = $1
 	AND food.binned_on >= current_date + 1 - interval '1 week'
 	AND food.binned_on <= current_date + 1
-  OR  food.eaten_on >= current_date + 1 - interval '1 week'
+  OR  users.uid = $1
+  AND food.eaten_on >= current_date + 1 - interval '1 week'
 	AND food.eaten_on <= current_date + 1
 ;`,
     [user_id]
