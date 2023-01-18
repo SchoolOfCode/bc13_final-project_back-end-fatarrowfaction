@@ -31,8 +31,8 @@ export const allEatenFoodRouter = express.Router();
 //get last weeks eaten food 
 export const lastWeeksEatenFoodRouter = express.Router();
 
-//get all eaten and wasted
-// export const eatenAndWastedRouter = express.Router();
+// get all eaten and wasted
+export const eatenAndWastedRouter = express.Router();
 
 //get last weeks wasted food
 export const lastWeeksWastedFoodRouter = express.Router();
