@@ -44,6 +44,7 @@ export async function getAllUserFood(user_id) {
 //gets all eaten and wasted food for a userSelect:
 
 export async function getAllEatenAndWasted(user_id) {
+  console.log('model fired line 47')
   const eatenAndWastedFood = await query(
     `SELECT * from food
 	INNER JOIN storage_containers
@@ -62,7 +63,7 @@ export async function getAllEatenAndWasted(user_id) {
     [user_id]
   );
     const stats = eatenStats(eatenAndWastedFood.rows)
-
+console.log('model function fired line 66 - last end point')
   return stats;
 }
 
