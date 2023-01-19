@@ -33,7 +33,7 @@ export const allEatenFoodRouter = express.Router();
 export const lastWeeksEatenFoodRouter = express.Router();
 
 // get all eaten and wasted
-export const eatenAndWastedRouter = express.Router();
+export const allEatenAndWastedRouter = express.Router();
 
 //get last weeks wasted food
 export const lastWeeksWastedFoodRouter = express.Router();
@@ -63,7 +63,7 @@ allWastedFoodRouter.get("/:id", async function (req, res) {
   res.json({ success: true, payload: allWastedFoodArray });
 })
 
-eatenAndWastedRouter.get('/:id', async function (req, res){
+allEatenAndWastedRouter.get('/:id', async function (req, res){
   const eatenAndWastedFoodArray = await getAllEatenAndWasted(req.params.id);
   res.json({success: true, payload: eatenAndWastedFoodArray})
 })
