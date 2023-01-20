@@ -11,7 +11,8 @@ import {
   getLastWeeksWastedFood,
   getAllEatenAndWasted,
   getLastWeeksEatenFood,
-  getWeekEatenAndWasted
+  getWeekEatenAndWasted,
+  getUserDetails,
 } from "../Models/models.js";
 //gets from Pantry screen
 export const userFoodRouter = express.Router();
@@ -29,7 +30,7 @@ export const donateFoodRouter = express.Router();
 export const allWastedFoodRouter = express.Router();
 //gets all eaten food
 export const allEatenFoodRouter = express.Router();
-//get last weeks eaten food 
+//get last weeks eaten food
 export const lastWeeksEatenFoodRouter = express.Router();
 
 // get all eaten and wasted
@@ -41,33 +42,39 @@ export const lastWeeksWastedFoodRouter = express.Router();
 //gets weeks eaten and wasted
 export const weeksEatenWastedRouter = express.Router();
 
-weeksEatenWastedRouter.get('/:id',async function (req, res){
+//gets stored DB of user
+export const userDetailsRouter = express.Router();
+
+weeksEatenWastedRouter.get("/:id", async function (req, res) {
   const allEatenFood = await getWeekEatenAndWasted(req.params.id);
-  res.json({ success: true, payload: allEatenFood });} )
+  res.json({ success: true, payload: allEatenFood });
+});
 
-lastWeeksWastedFoodRouter.get("/:id",async function (req, res){
+lastWeeksWastedFoodRouter.get("/:id", async function (req, res) {
   const allEatenFood = await getLastWeeksWastedFood(req.params.id);
-  res.json({ success: true, payload: allEatenFood });} )
+  res.json({ success: true, payload: allEatenFood });
+});
 
-lastWeeksEatenFoodRouter.get("/:id",async function (req, res){
+lastWeeksEatenFoodRouter.get("/:id", async function (req, res) {
   const allEatenFood = await getLastWeeksEatenFood(req.params.id);
-  res.json({ success: true, payload: allEatenFood });} )
+  res.json({ success: true, payload: allEatenFood });
+});
 
-allEatenFoodRouter.get("/:id", async function (req, res){
+allEatenFoodRouter.get("/:id", async function (req, res) {
   const allEatenFood = await getAllUserEatenFood(req.params.id);
   res.json({ success: true, payload: allEatenFood });
-})
+});
 
 allWastedFoodRouter.get("/:id", async function (req, res) {
   const allWastedFoodArray = await getAllUserWastedFood(req.params.id);
   res.json({ success: true, payload: allWastedFoodArray });
-})
+});
 
-eatenAndWastedRouter.get('/:id', async function (req, res){
-  console.log('router fired line67')
+eatenAndWastedRouter.get("/:id", async function (req, res) {
+  console.log("router fired line67");
   const eatenAndWastedFoodArray = await getAllEatenAndWasted(req.params.id);
-  res.json({success: true, payload: eatenAndWastedFoodArray})
-})
+  res.json({ success: true, payload: eatenAndWastedFoodArray });
+});
 
 userFoodRouter.get("/:id", async function (req, res) {
   const foodArray = await getUserFood(req.params.id);
@@ -82,6 +89,11 @@ userFoodRouter.patch("/id", async function (req, res) {
     req.params.id
   );
   res.json({ success: true, payload: editedFood });
+});
+
+userDetailsRouter.get("/:id", async function (req, res) {
+  const userDetails = await getUserDetails(req.params.id);
+  res.json({ success: true, payload: userDetails });
 });
 
 // whenever a user posts a new item, we need to first send a get request to get the container ID and then a post request to put the new food item in there to the container ID
