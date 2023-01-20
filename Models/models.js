@@ -174,6 +174,8 @@ export async function getAllUserEatenFood(user_id) {
   return eatenFood.rows;
 }
 
+
+
 // whenever a user posts a new item, we need to first send a get request to get the container ID and then a post request to put the new food item in there
 export async function getStorageID(user_id) {
   const storageID = await query(
@@ -292,9 +294,14 @@ export async function postNewUser(id) {
     newStorageContainer.rows,
   ];
 }
-
+//gets house and user id
 export async function getUserDetails(user_id) {
-  const userData = await query(`SELECT * FROM users WHERE users.uid = $1`, [
+  const userData = await query(`SELECT * FROM House
+  INNER JOIN house_owners
+  ON house_owners.house_id = house.id
+  INNER JOIN users
+  ON users.uid = house_owners.user_id
+  WHERE users.uid = $1`, [
     user_id,
   ]);
   return userData.rows;
