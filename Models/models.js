@@ -44,7 +44,7 @@ export async function getAllUserFood(user_id) {
 //gets all eaten and wasted food for a userSelect:
 
 export async function getAllEatenAndWasted(user_id) {
-  console.log('model fired line 47')
+  console.log("model fired line 47");
   const eatenAndWastedFood = await query(
     `SELECT * from food
 	INNER JOIN storage_containers
@@ -62,11 +62,10 @@ export async function getAllEatenAndWasted(user_id) {
 ;`,
     [user_id]
   );
-    const stats = eatenStats(eatenAndWastedFood.rows)
-console.log('model function fired line 66 - last end point')
+  const stats = eatenStats(eatenAndWastedFood.rows);
+  console.log("model function fired line 66 - last end point");
   return stats;
 }
-
 
 //gets LAST WEEKS eaten and wasted
 export async function getWeekEatenAndWasted(user_id) {
@@ -89,7 +88,7 @@ export async function getWeekEatenAndWasted(user_id) {
 ;`,
     [user_id]
   );
-  const stats = eatenStats(weekFood.rows)
+  const stats = eatenStats(weekFood.rows);
   return stats;
 }
 
@@ -292,4 +291,11 @@ export async function postNewUser(id) {
     newHouseOwner.rows,
     newStorageContainer.rows,
   ];
+}
+
+export async function getUserDetails(user_id) {
+  const userData = await query(`SELECT * FROM users WHERE users.uid = $1`, [
+    user_id,
+  ]);
+  return userData.rows;
 }
