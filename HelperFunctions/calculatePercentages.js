@@ -1,12 +1,20 @@
 export function eatenStats(dataArray) {
   const numberOfEaten = dataArray.filter((e) => e.eaten_on).length;
-  const numberOfWasted = dataArray.filter((e) => e.binned_on).length;
+  const arrayOfWasted = dataArray.filter((e) => e.binned_on);
   const eatenPercentage =
-    (numberOfEaten / (numberOfWasted + numberOfEaten)) * 100;
+      (numberOfEaten / (arrayOfWasted.length + numberOfEaten)) * 100;
   const wastedPercentage =
-    (numberOfWasted / (numberOfEaten + numberOfWasted)) * 100;
+      (arrayOfWasted.length / (numberOfEaten + arrayOfWasted.length)) * 100;
+
+  // for loop to iterate through the arrayofwasted to find how much money has been wasted
+  let wastedCost = 0;
+  for (let fooditem of arrayOfWasted) {
+      wastedCost = wastedCost + fooditem.price;
+  }
+
   return {
-    eatenPercentage: Math.round(eatenPercentage),
-    wastedPercentage: Math.round(wastedPercentage),
+      eatenPercentage: Math.round(eatenPercentage),
+      wastedPercentage: Math.round(wastedPercentage),
+      moneyWasted: wastedCost,
   };
 }
