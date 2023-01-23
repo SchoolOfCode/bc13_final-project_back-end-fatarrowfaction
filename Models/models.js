@@ -174,8 +174,6 @@ export async function getAllUserEatenFood(user_id) {
   return eatenFood.rows;
 }
 
-
-
 // whenever a user posts a new item, we need to first send a get request to get the container ID and then a post request to put the new food item in there
 export async function getStorageID(user_id) {
   const storageID = await query(
@@ -193,26 +191,47 @@ export async function getStorageID(user_id) {
   return storageID.rows;
 }
 //calls above function first to get correct container, then posts food item in it. this is currently only set up for users with only 1 container
-export async function postFood(user_id, food) {
-  console.log(food);
+// export async function postFood(user_id, food) {
+//   console.log(food);
+//   const storageID = await getStorageID(user_id);
+//   const foodItem = await query(
+//     `INSERT INTO food (
+//    	name,
+//    	price,
+//    	storage_id,
+//    	expires_on,
+//    	eaten_on,
+//    	binned_on,
+//    	donated_on
+//       )
+//       VALUES ($1, $2, $3, $4, NULL, NULL, NULL);`,
+//     [food.name, food.price, storageID[0].id, food.expires_on]
+//   );
+
+//   return foodItem.rows;
+// }
+export async function postFood(user_id, foods) {
   const storageID = await getStorageID(user_id);
-  const foodItem = await query(
-    `INSERT INTO food (
-   	name,
-   	price,
-   	storage_id,
-   	expires_on,
-   	eaten_on,
-   	binned_on,
-   	donated_on
-      )
-      VALUES ($1, $2, $3, $4, NULL, NULL, NULL);`,
-    [food.name, food.price, storageID[0].id, food.expires_on]
+  const foodItems = await Promise.all(
+    foods.map(async (food) => {
+      return await query(
+        `INSERT INTO food (
+          name,
+          price,
+          storage_id,
+          expires_on,
+          eaten_on,
+          binned_on,
+          donated_on
+        )
+        VALUES ($1, $2, $3, $4, NULL, NULL, NULL);`,
+        [food.name, food.price, storageID[0].id, food.expires_on]
+      );
+    })
   );
 
-  return foodItem.rows;
+  return foodItems.rows;
 }
-
 // gets the user's profile information
 export async function getUserProfile(user_id) {
   const userInfo = await query(`SELECT * FROM users WHERE users.uid = $1`, [
@@ -296,13 +315,14 @@ export async function postNewUser(id) {
 }
 //gets house and user id
 export async function getUserDetails(user_id) {
-  const userData = await query(`SELECT * FROM House
+  const userData = await query(
+    `SELECT * FROM House
   INNER JOIN house_owners
   ON house_owners.house_id = house.id
   INNER JOIN users
   ON users.uid = house_owners.user_id
-  WHERE users.uid = $1`, [
-    user_id,
-  ]);
+  WHERE users.uid = $1`,
+    [user_id]
+  );
   return userData.rows;
 }
