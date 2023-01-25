@@ -23,7 +23,7 @@ export function eatenStats(dataArray) {
         moneyWasted: wastedCost,
         spentWell: spentWell,
         totalNumberEaten: arrayOfEaten.length,
-        totalNumberWasted: arrayOfWasted.lengnth,
-        totalNumberItems: arrayOfEaten.lengnth + arrayOfWasted.lengnth,
+        totalNumberWasted: arrayOfWasted.length,
+        totalNumberItems: arrayOfEaten.length + arrayOfWasted.length,
     };
   }
