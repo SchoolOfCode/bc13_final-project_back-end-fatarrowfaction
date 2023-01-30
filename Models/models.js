@@ -1,5 +1,26 @@
 import query from "../db/index.js";
 import { eatenStats } from "../HelperFunctions/calculatePercentages.js";
+
+//gets food that will expire today:
+export async function getTodaysFood(user_id){
+  const todaysFood = await query(`SELECT food.id, food.name from food
+  INNER JOIN storage_containers
+  ON storage_containers.id = food.storage_id
+  INNER JOIN house
+  ON house.id = storage_containers.house_id
+  INNER JOIN house_owners
+  ON house_owners.house_id = house.id
+  INNER JOIN users
+  ON users.uid = house_owners.user_id
+  WHERE users.uid = $1
+AND food.eaten_on IS NULL
+  AND food.binned_on IS NULL
+  AND food.donated_on IS NULL
+AND expires_on :: date = current_date :: date`, [user_id])
+return todaysFood.rows
+}
+
+
 //gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
   console.log("getUserFood has been called");
@@ -22,6 +43,7 @@ export async function getUserFood(user_id) {
   );
   return allUserFood.rows;
 }
+
 
 //gets all food for one user...
 export async function getAllUserFood(user_id) {

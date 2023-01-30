@@ -15,6 +15,7 @@ import {
   lastWeeksWastedFoodRouter,
   weeksEatenWastedRouter,
   userDetailsRouter,
+  todaysFood
 } from "./Routes/routes.js";
 import { userRouter } from "./Routes/user.js";
 
@@ -23,6 +24,8 @@ const PORT = process.env.port || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/todaysFood", todaysFood)
 
 app.use("/weekEatenWasted", weeksEatenWastedRouter);
 app.use("/allEatenAndWasted", eatenAndWastedRouter);

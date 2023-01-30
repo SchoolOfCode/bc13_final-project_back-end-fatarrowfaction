@@ -13,7 +13,10 @@ import {
   getLastWeeksEatenFood,
   getWeekEatenAndWasted,
   getUserDetails,
+  getTodaysFood
 } from "../Models/models.js";
+//gets todays food for cron job
+export const todaysFood = express.Router()
 //gets from Pantry screen
 export const userFoodRouter = express.Router();
 //gets from addItem screen
@@ -44,6 +47,11 @@ export const weeksEatenWastedRouter = express.Router();
 
 //gets stored DB of user
 export const userDetailsRouter = express.Router();
+
+todaysFood.get("/:id", async function (req, res) {
+  const todaysFood = await getTodaysFood(req.params.id);
+  res.json({ success: true, payload: todaysFood})
+})
 
 weeksEatenWastedRouter.get("/:id", async function (req, res) {
   const allEatenFood = await getWeekEatenAndWasted(req.params.id);
