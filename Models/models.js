@@ -1,6 +1,8 @@
 import query from "../db/index.js";
+import { eatenStats } from "../HelperFunctions/calculatePercentages.js";
 //gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
+
   const allUserFood = await query(
     `SELECT food.id, food.name, food.price, food.storage_id, food.expires_on, food.eaten_on, food.binned_on, food.donated_on, food.added_on from food
       INNER JOIN storage_containers
@@ -14,7 +16,8 @@ export async function getUserFood(user_id) {
       WHERE users.uid = $1
 	  AND food.eaten_on IS NULL
       AND food.binned_on IS NULL
-      AND food.donated_on IS NULL`,
+      AND food.donated_on IS NULL
+      ORDER BY food.expires_on`,
     [user_id]
   );
   return allUserFood.rows;
@@ -38,9 +41,11 @@ export async function getAllUserFood(user_id) {
   return allUserFood.rows;
 }
 
-//gets wasted food for last week for a user
-export async function getLastWeeksWastedFood(user_id) {
-  const weekFood = await query(
+//gets all eaten and wasted food for a userSelect:
+
+export async function getAllEatenAndWasted(user_id) {
+  console.log("model fired line 47");
+  const eatenAndWastedFood = await query(
     `SELECT * from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
@@ -51,8 +56,57 @@ export async function getLastWeeksWastedFood(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.binned_on >= current_date - interval '1 week'
-	AND food.binned_on <= current_date
+	AND food.binned_on <= current_date + 1
+  OR food.eaten_on <= current_date + 1
+  AND users.uid = $1
+;`,
+    [user_id]
+  );
+  const stats = eatenStats(eatenAndWastedFood.rows);
+  console.log("model function fired line 66 - last end point");
+  return stats;
+}
+
+//gets LAST WEEKS eaten and wasted
+export async function getWeekEatenAndWasted(user_id) {
+  const weekFood = await query(
+    `SELECT food.name, food.price, food.binned_on, food.eaten_on from food
+	INNER JOIN storage_containers
+	ON storage_containers.id = food.storage_id
+	INNER JOIN house
+	ON house.id = storage_containers.house_id
+	INNER JOIN house_owners
+	ON house_owners.house_id = house.id
+	INNER JOIN users
+	ON users.uid = house_owners.user_id
+	WHERE users.uid = $1
+	AND food.binned_on >= current_date + 1 - interval '1 week'
+	AND food.binned_on <= current_date + 1
+  OR  users.uid = $1
+  AND food.eaten_on >= current_date + 1 - interval '1 week'
+	AND food.eaten_on <= current_date + 1
+;`,
+    [user_id]
+  );
+  const stats = eatenStats(weekFood.rows);
+  return stats;
+}
+
+//gets wasted food for last week for a user
+export async function getLastWeeksWastedFood(user_id) {
+  const weekFood = await query(
+    `SELECT food.name, food.price, food.binned_on from food
+	INNER JOIN storage_containers
+	ON storage_containers.id = food.storage_id
+	INNER JOIN house
+	ON house.id = storage_containers.house_id
+	INNER JOIN house_owners
+	ON house_owners.house_id = house.id
+	INNER JOIN users
+	ON users.uid = house_owners.user_id
+	WHERE users.uid = $1
+	AND food.binned_on >= current_date + 1 - interval '1 week'
+	AND food.binned_on <= current_date + 1
 ;`,
     [user_id]
   );
@@ -62,7 +116,7 @@ export async function getLastWeeksWastedFood(user_id) {
 //gets eaten food for last week for a user
 export async function getLastWeeksEatenFood(user_id) {
   const weekFood = await query(
-    `SELECT * from food
+    `SELECT food.name, food.price, food.eaten_on from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
@@ -72,8 +126,8 @@ export async function getLastWeeksEatenFood(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.eaten_on >= current_date - interval '1 week'
-	AND food.eaten_on <= current_date
+	AND food.eaten_on >= current_date + 1 - interval '1 week'
+	AND food.eaten_on <= current_date + 1
 ;`,
     [user_id]
   );
@@ -83,7 +137,7 @@ export async function getLastWeeksEatenFood(user_id) {
 //gets all of a users wasted food
 export async function getAllUserWastedFood(user_id) {
   const wastedFood = await query(
-    `SELECT * from food
+    `SELECT food.name, food.price, food.binned_on from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
@@ -93,7 +147,7 @@ export async function getAllUserWastedFood(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.binned_on <= current_date
+	AND food.binned_on <= current_date + 1
 ;`,
     [user_id]
   );
@@ -103,7 +157,7 @@ export async function getAllUserWastedFood(user_id) {
 //gets all of a users eaten food
 export async function getAllUserEatenFood(user_id) {
   const eatenFood = await query(
-    `SELECT * from food
+    `SELECT food.name, food.price, food.eaten_on from food
 	INNER JOIN storage_containers
 	ON storage_containers.id = food.storage_id
 	INNER JOIN house
@@ -113,7 +167,7 @@ export async function getAllUserEatenFood(user_id) {
 	INNER JOIN users
 	ON users.uid = house_owners.user_id
 	WHERE users.uid = $1
-	AND food.eaten_on <= current_date
+	AND food.eaten_on <= current_date + 1
 ;`,
     [user_id]
   );
@@ -137,26 +191,47 @@ export async function getStorageID(user_id) {
   return storageID.rows;
 }
 //calls above function first to get correct container, then posts food item in it. this is currently only set up for users with only 1 container
-export async function postFood(user_id, food) {
-  console.log(food);
+// export async function postFood(user_id, food) {
+//   console.log(food);
+//   const storageID = await getStorageID(user_id);
+//   const foodItem = await query(
+//     `INSERT INTO food (
+//    	name,
+//    	price,
+//    	storage_id,
+//    	expires_on,
+//    	eaten_on,
+//    	binned_on,
+//    	donated_on
+//       )
+//       VALUES ($1, $2, $3, $4, NULL, NULL, NULL);`,
+//     [food.name, food.price, storageID[0].id, food.expires_on]
+//   );
+
+//   return foodItem.rows;
+// }
+export async function postFood(user_id, foods) {
   const storageID = await getStorageID(user_id);
-  const foodItem = await query(
-    `INSERT INTO food (
-   	name,
-   	price,
-   	storage_id,
-   	expires_on,
-   	eaten_on,
-   	binned_on,
-   	donated_on
-      )
-      VALUES ($1, $2, $3, $4, NULL, NULL, NULL);`,
-    [food.name, food.price, storageID[0].id, food.expires_on]
+  const foodItems = await Promise.all(
+    foods.map(async (food) => {
+      return await query(
+        `INSERT INTO food (
+          name,
+          price,
+          storage_id,
+          expires_on,
+          eaten_on,
+          binned_on,
+          donated_on
+        )
+        VALUES ($1, $2, $3, $4, NULL, NULL, NULL);`,
+        [food.name, food.price, storageID[0].id, food.expires_on]
+      );
+    })
   );
 
-  return foodItem.rows;
+  return foodItems.rows;
 }
-
 // gets the user's profile information
 export async function getUserProfile(user_id) {
   const userInfo = await query(`SELECT * FROM users WHERE users.uid = $1`, [
@@ -239,4 +314,17 @@ export async function postNewUser(id) {
     newHouseOwner.rows,
     newStorageContainer.rows,
   ];
+}
+//gets house and user id
+export async function getUserDetails(user_id) {
+  const userData = await query(
+    `SELECT * FROM House
+  INNER JOIN house_owners
+  ON house_owners.house_id = house.id
+  INNER JOIN users
+  ON users.uid = house_owners.user_id
+  WHERE users.uid = $1`,
+    [user_id]
+  );
+  return userData.rows;
 }
