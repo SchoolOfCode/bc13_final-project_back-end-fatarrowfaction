@@ -13,7 +13,7 @@ export async function getUser(user) {
     );
     if (backendUserReply.rows.length === 0) {
       const newUser = await postNewUser(user);
-      return newUser.rows;
+      return newUser[0];
     }
     if (backendUserReply.rows.length > 0) {
       return backendUserReply.rows;
