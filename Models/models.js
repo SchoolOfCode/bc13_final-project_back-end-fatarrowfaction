@@ -1,5 +1,30 @@
 import query from "../db/index.js";
 import { eatenStats } from "../HelperFunctions/calculatePercentages.js";
+
+//get all userS:
+export async function getAllUsers(){
+  const data = await query(`SELECT * from users`);
+  return data.rows
+}
+
+//gets food that will expire today:
+export async function getTodaysFood(user_id){
+  const todaysFood = await query(`SELECT food.id, food.name from food
+  INNER JOIN storage_containers
+  ON storage_containers.id = food.storage_id
+  INNER JOIN house
+  ON house.id = storage_containers.house_id
+  INNER JOIN house_owners
+  ON house_owners.house_id = house.id
+  INNER JOIN users
+  ON users.uid = house_owners.user_id
+  WHERE users.uid = $1
+AND food.eaten_on IS NULL
+  AND food.binned_on IS NULL
+  AND food.donated_on IS NULL
+AND expires_on :: date = current_date :: date`, [user_id])
+return todaysFood.rows
+}
 //gets food that hasnt been eaten/donated/binned
 export async function getUserFood(user_id) {
 
@@ -44,7 +69,6 @@ export async function getAllUserFood(user_id) {
 //gets all eaten and wasted food for a userSelect:
 
 export async function getAllEatenAndWasted(user_id) {
-  console.log("model fired line 47");
   const eatenAndWastedFood = await query(
     `SELECT * from food
 	INNER JOIN storage_containers
@@ -63,7 +87,6 @@ export async function getAllEatenAndWasted(user_id) {
     [user_id]
   );
   const stats = eatenStats(eatenAndWastedFood.rows);
-  console.log("model function fired line 66 - last end point");
   return stats;
 }
 

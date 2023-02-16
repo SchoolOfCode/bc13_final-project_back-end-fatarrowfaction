@@ -71,7 +71,6 @@ allWastedFoodRouter.get("/:id", async function (req, res) {
 });
 
 eatenAndWastedRouter.get("/:id", async function (req, res) {
-  console.log("router fired line67");
   const eatenAndWastedFoodArray = await getAllEatenAndWasted(req.params.id);
   res.json({ success: true, payload: eatenAndWastedFoodArray });
 });
@@ -103,7 +102,6 @@ newItemRouter.get("/:id", async function (req, res) {
 });
 
 newItemRouter.post("/:id", async function (req, res) {
-  console.log("FOOD --->", req.body, req.params.id);
   const addFoodItem = await postFood(req.params.id, req.body);
   res.json({ success: true, payload: addFoodItem });
 });
