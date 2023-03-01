@@ -15,6 +15,8 @@ import {
   lastWeeksWastedFoodRouter,
   weeksEatenWastedRouter,
   userDetailsRouter,
+  getTodaysFoodRouter,
+  getAllUsersRouter
 } from "./Routes/routes.js";
 import { userRouter } from "./Routes/user.js";
 
@@ -22,6 +24,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/getAllUsers", getAllUsersRouter)
+app.use("/getTodaysFood", getTodaysFoodRouter);
 
 app.use("/weekEatenWasted", weeksEatenWastedRouter);
 app.use("/allEatenAndWasted", eatenAndWastedRouter);

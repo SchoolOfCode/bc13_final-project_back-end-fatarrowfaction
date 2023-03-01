@@ -13,7 +13,13 @@ import {
   getLastWeeksEatenFood,
   getWeekEatenAndWasted,
   getUserDetails,
+  getTodaysFood,
+  getAllUsers
 } from "../Models/models.js";
+//gets all user ids to send push notifications
+export const getAllUsersRouter = express.Router();
+//gets todays food for push notifcations
+export const getTodaysFoodRouter = express.Router();
 //gets from Pantry screen
 export const userFoodRouter = express.Router();
 //gets from addItem screen
@@ -44,6 +50,16 @@ export const weeksEatenWastedRouter = express.Router();
 
 //gets stored DB of user
 export const userDetailsRouter = express.Router();
+
+getAllUsersRouter.get("/", async function(req, res){
+  const allUsers = await getAllUsers();
+  res.json({succes: true, payload: allUsers})
+})
+
+getTodaysFoodRouter.get("/:id", async function (req, res){
+  const todaysFood = await getTodaysFood(req.params.id);
+  res.json({ success: true, payload: todaysFood});
+})
 
 weeksEatenWastedRouter.get("/:id", async function (req, res) {
   const allEatenFood = await getWeekEatenAndWasted(req.params.id);
